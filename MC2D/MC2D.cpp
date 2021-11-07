@@ -1,10 +1,13 @@
 ﻿#include <stdio.h>
-#include<windows.h>
 #include<conio.h>
 #include<string.h>
 #include <ctime>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include<windows.h>
+#include<Mmsystem.h>
+#pragma comment(lib,"winmm.lib")
 using namespace std;
 
 char map[100][100] = { 0 };
@@ -17,7 +20,19 @@ bool isshift = false;
 char hc4[2][2];
 char hc9[3][3];
 bool isredraw=false;
+ifstream fin;
+ofstream fout;
 HWND hwnd = GetForegroundWindow();//使hwnd代表最前端的窗口 
+string cpath;
+BOOL playbgm()
+{
+	return PlaySound(TEXT("C:\\MC2D\\music\\bgm.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
+void hidecursor()
+{
+	CONSOLE_CURSOR_INFO cursor_info = { 1, 0 };
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
+}
 bool check(int xory)
 {
 	return xory >= 0 && xory <= m && map? true : false;
@@ -51,8 +66,12 @@ void color(char ch)
 		break;
 	case '0':
 		setcolor(0xF, 5);
+		break;
 	    default:
-		   break;
+		{
+            break;
+		}
+		   
 	}
 }
 char hecheng(char strs[2][2])
@@ -74,7 +93,7 @@ char hecheng(char strs[2][2])
 void gotoxy(int oldx,int oldy,int newx,int newy)
 {
 	isredraw = true;
-	COORD pos;
+	COORD pos{};
 	pos.X = oldx;
 	pos.Y = oldy;
 	color('*');
@@ -85,7 +104,7 @@ void gotoxy(int oldx,int oldy,int newx,int newy)
 	if (!isshift)
 	{
 		map[newy][newx] = 'A';
-		COORD pos2;
+		COORD pos2{};
 		pos2.X = newx;
 		pos2.Y = newy;
 		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos2);
@@ -94,7 +113,7 @@ void gotoxy(int oldx,int oldy,int newx,int newy)
 	else
 	{
 		map[newy][newx] = 'a';
-		COORD pos2;
+		COORD pos2{};
 		pos2.X = newx;
 		pos2.Y = newy;
 		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos2);
@@ -194,7 +213,7 @@ void move(char c)
 		nx = curx - 1;
 		if (check(nx))
 		{
-			if (map[cury][nx]=='*')
+			if (map[cury][nx] == '*')
 			{
 				gotoxy(curx, cury, nx, cury);
 				curx--;
@@ -244,6 +263,7 @@ void move(char c)
 				if (hand != -1 && pbag[hand] != 'W' && pbag[hand] != 'S' && pbag[hand] != 'I')
 				{
 					map[cury][nx] = pbag[hand];
+					pbag.erase(pbag.begin() + hand);
 					hand--;
 				}
 			}
@@ -335,6 +355,8 @@ void move(char c)
 				if (hand != -1 && pbag[hand] != 'W' && pbag[hand] != 'S' && pbag[hand] != 'I')
 				{
 					map[cury][nx] = pbag[hand];
+					pbag.erase(pbag.begin() + hand);
+					hand--;
 				}
 			}
 			else
@@ -425,6 +447,8 @@ void move(char c)
 				if (hand != -1 && pbag[hand] != 'W' && pbag[hand] != 'S' && pbag[hand] != 'I')
 				{
 					map[ny][curx] = pbag[hand];
+					pbag.erase(pbag.begin() + hand);
+					hand--;
 				}
 			}
 			else
@@ -514,6 +538,8 @@ void move(char c)
 				if (hand != -1 && pbag[hand] != 'W' && pbag[hand] != 'S' && pbag[hand] != 'I')
 				{
 					map[ny][curx] = pbag[hand];
+					pbag.erase(pbag.begin() + hand);
+					hand--;
 				}
 			}
 			else
@@ -726,10 +752,14 @@ void move(char c)
 			return;
 		}
 		break;
-    case 'h':
+	case 'h':
+	{
 		hand = -1;
 		break;
+	}
+
 	case 'o':
+	{
 		if (isshift)
 		{
 			isshift = false;
@@ -738,6 +768,46 @@ void move(char c)
 		{
 			isshift = true;
 		}
+		break;
+	}
+	case 27:
+	{
+		int rs = MessageBox(hwnd, TEXT("你要退出吗?"), TEXT("提示"), MB_ICONINFORMATION | MB_OKCANCEL);
+		if (rs == IDOK)
+		{
+			fout.open(cpath, ios::out | ios::app);
+			if (pbag.size() == 0)
+			{
+				printf("?");
+			}
+			else
+			{
+				for (int i = 0; i < pbag.size(); i++)
+				{
+					fout << pbag[i];
+				}
+			}
+			fout << "\n";
+			for (int i = 0; i <= m; i++)
+			{
+				for (int j = 0; j <= n; j++)
+				{
+					if (map[i][j] == 'A')
+					{
+						map[i][j] = '*';
+					}
+					fout << map[i][j];
+				}
+			}
+			fout << "\n";
+			fout << curx << " " << cury;
+			fout.close();
+			exit(0);
+		}
+		break;
+	}
+	default:
+		break;
 	}
 }
 
@@ -745,6 +815,8 @@ int main()
 {
 	ShowWindow(hwnd, SW_MAXIMIZE);
     ios::sync_with_stdio(false);
+	hidecursor();
+	playbgm();
 	system("title MC2D");
 	system("color 3F");
 	printf("     Minecraft     \n");
@@ -761,11 +833,85 @@ int main()
 	if (a == 2)
 		exit(0);
 	system("cls");
-	suiji(time(0));
+	printf("[      1  读取存档      ]\n");
+	printf("[      2  新建存档      ]\n");
+	int b;
+	scanf("%d", &b);
+	if (b == 1)
+	{
+		system("cls");
+		char buffer[1024];
+		vector<string> cd;
+		ifstream fin2("C:\\MC2D\\cd.txt", ios::in);
+		if (fin2.good())
+		{
+			while (fin2 >> buffer)
+			{
+				cd.push_back(buffer);
+			}
+			fin2.close();
+			printf("存档有:\n");
+			int ctt = 0, c;
+			for (vector<string>::iterator it = cd.begin(); it != cd.end(); it++)
+			{
+				cout << ctt << " " << (*it) << endl;
+				ctt++;
+			}
+			printf("第几个?\n");
+			scanf("%d", &c);
+			if (c>=cd.size())
+			{
+				MessageBox(hwnd, TEXT("此存档不存在!"), TEXT("阿哲"), MB_OK);
+			}
+			else
+			{
+				fin.open(cd[c], ios::in);
+				if (fin.good())
+				{
+					string mp;
+					string bg;
+					fin >> bg >> mp >> curx >> cury;
+					if (bg!="?")
+					{
+						pbag.resize(bg.size());
+						pbag.assign(bg.begin(), bg.end());
+					}
+					for (int i = 0; i <= m; i++)
+					{
+						for (int j = 0; j <= n; j++)
+						{
+							map[i][j] = mp[static_cast<std::basic_string<char, std::char_traits<char>, std::allocator<char>>::size_type>(i) * m + j];
+						}
+					}
+					fin.close();
+					cpath = cd[c];
+				}
+				else
+				{
+					MessageBox(hwnd, TEXT("你好像根本没有这个存档..."), TEXT("阿哲"), MB_OK);
+				}
+			}
+		}
+		else
+		{
+			MessageBox(hwnd, TEXT("你好像根本没有存档..."), TEXT("阿哲"), MB_OK);
+		}
+	}
+	else
+	{
+		string d;
+		printf("请输入存档名称\n");
+		cin >> d;
+		ofstream fout2("C:\\MC2D\\cd.txt", ios::out | ios::app);//打开存档信息
+		fout2 << "C:\\MC2D\\" + d + ".txt" << "\n";//添加存档
+		fout2.close();//end
+		cpath = "C:\\MC2D\\" + d + ".txt";
+		suiji(time(0));
+	}
 	while (1)
 	{
 		out();
-		char ch = getch();
+		char ch = _getch();
 		move(ch);
 	}
 }
