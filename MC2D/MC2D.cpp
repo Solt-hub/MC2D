@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include<windows.h>
 #include<Mmsystem.h>
 #pragma comment(lib,"winmm.lib")
@@ -15,6 +16,7 @@ int m = 61;
 int n = 62;
 int curx = 0, cury = 0;
 vector<char> pbag{};//玩家背包
+vector<int> pbnj{};
 int hand = -1;//背包里的下标
 bool isshift = false;
 char hc4[2][2];
@@ -279,6 +281,7 @@ void move(char c)
 					{
 						pbag.push_back('#');
 					}
+					pbnj.push_back(-1);
 					map[cury][nx] = map[cury][nx] == 'T' || map[cury][nx] == '#' ? '*' : map[cury][nx];
 					hand++;
 				}
@@ -296,6 +299,8 @@ void move(char c)
 					{
 						pbag.push_back('=');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[cury][nx] = map[cury][nx] == 'T' || map[cury][nx] == '=' || map[cury][nx] == '#' ? '*' : map[cury][nx];
 					hand++;
 				}
@@ -317,6 +322,8 @@ void move(char c)
 					{
 						pbag.push_back('@');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[cury][nx] = map[cury][nx] == 'T' || map[cury][nx] == '=' || map[cury][nx] == '@' || map[cury][nx] == '#' ? '*' : map[cury][nx];
 					hand++;
 				}
@@ -338,6 +345,8 @@ void move(char c)
 					{
 						pbag.push_back('@');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[cury][nx] = map[cury][nx] == 'T' || map[cury][nx] == '=' || map[cury][nx] == '@' || map[cury][nx] == '#' ? '*' : map[cury][nx];
 					hand++;
 				}
@@ -371,6 +380,7 @@ void move(char c)
 					{
 						pbag.push_back('#');
 					}
+					pbnj.push_back(-1);
 					map[cury][nx] = map[cury][nx] == 'T' || map[cury][nx] == '#' ? '*' : map[cury][nx];
 					hand++;
 				}
@@ -388,6 +398,8 @@ void move(char c)
 					{
 						pbag.push_back('=');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[cury][nx] = map[cury][nx] == 'T' || map[cury][nx] == '=' || map[cury][nx] == '#' ? '*' : map[cury][nx];
 					hand++;
 				}
@@ -409,6 +421,8 @@ void move(char c)
 					{
 						pbag.push_back('@');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[cury][nx] = map[cury][nx] == 'T' || map[cury][nx] == '=' || map[cury][nx] == '@' || map[cury][nx] == '#' ? '*' : map[cury][nx];
 					hand++;
 				}
@@ -430,6 +444,8 @@ void move(char c)
 					{
 						pbag.push_back('@');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[cury][nx] = map[cury][nx] == 'T' || map[cury][nx] == '=' || map[cury][nx] == '@' || map[cury][nx] == '#' ? '*' : map[cury][nx];
 					hand++;
 				}
@@ -463,6 +479,8 @@ void move(char c)
 					{
 						pbag.push_back('#');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[ny][curx] = map[ny][curx] == 'T' || map[ny][curx] == '#' ? '*' : map[ny][curx];
 					hand++;
 				}
@@ -480,6 +498,8 @@ void move(char c)
 					{
 						pbag.push_back('=');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[ny][curx] = map[ny][curx] == 'T' || map[ny][curx] == '=' || map[ny][curx] == '#' ? '*' : map[ny][curx];
 					hand++;
 				}
@@ -501,6 +521,8 @@ void move(char c)
 					{
 						pbag.push_back('@');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[ny][curx] = map[ny][curx] == 'T' || map[ny][curx] == '=' || map[ny][curx] == '@' || map[ny][curx] == '#' ? '*' : map[ny][curx];
 					hand++;
 				}
@@ -522,6 +544,8 @@ void move(char c)
 					{
 						pbag.push_back('@');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[ny][curx] = map[ny][curx] == 'T' || map[ny][curx] == '=' || map[ny][curx] == '@' || map[ny][curx] == '#' ? '*' : map[ny][curx];
 					hand++;
 				}
@@ -554,6 +578,7 @@ void move(char c)
 					{
 						pbag.push_back('#');
 					}
+					pbnj.push_back(-1);
 					map[ny][curx] = map[ny][curx] == 'T' || map[ny][curx] == '#' ? '*' : map[ny][curx];
 					hand++;
 				}
@@ -571,6 +596,8 @@ void move(char c)
 					{
 						pbag.push_back('=');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[ny][curx] = map[ny][curx] == 'T' || map[ny][curx] == '=' || map[ny][curx] == '#' ? '*' : map[ny][curx];
 					hand++;
 				}
@@ -592,6 +619,8 @@ void move(char c)
 					{
 						pbag.push_back('@');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[ny][curx] = map[ny][curx] == 'T' || map[ny][curx] == '=' || map[ny][curx] == '@' || map[ny][curx] == '#' ? '*' : map[ny][curx];
 					hand++;
 				}
@@ -613,6 +642,8 @@ void move(char c)
 					{
 						pbag.push_back('@');
 					}
+					pbnj.push_back(-1);
+					pbnj[hand]--;
 					map[ny][curx] = map[ny][curx] == 'T' || map[ny][curx] == '=' || map[ny][curx] == '@' || map[ny][curx] == '#' ? '*' : map[ny][curx];
 					hand++;
 				}
@@ -635,11 +666,17 @@ void move(char c)
 				printf("%3c", pbag[i]);
 			}
 			printf("\n");
+			for (int i = 0; i < pbnj.size(); i++)
+			{
+				printf("%3d", pbnj[i]);
+			}
+			printf("\n");
 			system("pause");
 			printf("请选择你要干什么？\n[1]丢弃物品\n[2]设置手中物品\n[3]合成\n\[4]空手\n请选择");
 			int ch = 0, ch2 = 0, ch3 = 0, ch4 = 0;
 			char t = 0, jg = 0;
 			vector<char> tuihuan{};
+			vector<int> tihuan2{};
 			scanf_s("%d", &ch);
 			switch (ch)
 			{
@@ -655,6 +692,7 @@ void move(char c)
 				}
 				else
 				{
+					pbnj.erase(pbnj.begin() + ch2);
 					pbag.erase(pbag.begin() + ch2);
 					system("pause");
 					return;
@@ -688,7 +726,16 @@ void move(char c)
 						cout << "第" << i + 1 << "," << j + 1 << "个格子，放什么？(没有为'?')\n";
 						cin >> t;
 						vector<char>::iterator result = find(pbag.begin(), pbag.end(), t);
-						if (result == pbag.end() && t != '?')
+						int findd = -1;
+						for (int i = 0; i < pbag.size(); i++)
+						{
+							if (pbag[i] == t)
+							{
+								findd = i;
+								break;
+							}
+						}
+						if (findd == -1 && t != '?')
 						{
 							cout << "史蒂猪的背包里没有这件物品！\n";
 							system("pause");
@@ -698,7 +745,9 @@ void move(char c)
 						{
 							hc4[i][j] = t;
 							tuihuan.push_back(t);
-							pbag.erase(result);
+							tihuan2.push_back(pbnj[findd]);
+							pbag.erase(pbag.begin() + findd);
+							pbnj.erase(pbnj.begin() + findd);
 						}
 					}
 				}
@@ -721,11 +770,32 @@ void move(char c)
 					{
 						system("pause");
 						pbag.insert(pbag.end(), tuihuan.begin(), tuihuan.end());
+						pbnj.insert(pbnj.end(), tihuan2.begin(), tihuan2.end());
 						return;
 					}
 					else
 					{
 						pbag.push_back(jg);
+						switch (jg)
+						{
+						case 'W':
+						{
+							pbnj.push_back(10);
+							break;
+						}
+						case 'S':
+						{
+							pbnj.push_back(20);
+							break;
+						}
+						case 'I':
+						{
+							pbnj.push_back(30);
+							break;
+						}
+						default:
+							break;
+						}
 						hand++;
 					}
 				}
@@ -801,8 +871,23 @@ void move(char c)
 			}
 			fout << "\n";
 			fout << curx << " " << cury;
+			fout << "\n";
+			for (int i = 0; i < pbnj.size(); i++)
+			{
+				fout << pbnj[i] << " ";
+			}
 			fout.close();
 			exit(0);
+		}
+		break;
+	}
+	case 0:
+	case -32:
+	{
+		char tmp = _getch();
+		if (tmp >= 59 && tmp <= 68)
+		{
+			hand = tmp - 59;
 		}
 		break;
 	}
@@ -875,6 +960,12 @@ int main()
 					{
 						pbag.resize(bg.size());
 						pbag.assign(bg.begin(), bg.end());
+						for (int i = 0; i < pbag.size(); i++)
+						{
+							int v;
+							fin >> v;
+							pbnj.push_back(v);
+						}
 					}
 					for (int i = 0; i <= m; i++)
 					{
@@ -910,6 +1001,13 @@ int main()
 	}
 	while (1)
 	{
+		for (int i = 0; i < pbnj.size(); i++)
+		{
+			if (pbnj[i] == 0)
+			{
+				pbag.erase(pbag.begin() + i);
+			}
+		}
 		out();
 		char ch = _getch();
 		move(ch);
